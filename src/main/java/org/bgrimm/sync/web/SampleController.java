@@ -18,7 +18,9 @@ package org.bgrimm.sync.web;
 
 import java.util.List;
 
+import org.bgrimm.sync.domain.Asset;
 import org.bgrimm.sync.domain.City;
+import org.bgrimm.sync.service.AssetService;
 import org.bgrimm.sync.service.CityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,16 +29,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
+@RequestMapping("/")
 public class SampleController {
 
 	@Autowired
 	private CityService cityService;
 
-	@RequestMapping("/")
+	@Autowired
+	private AssetService assetService;
+
+	@RequestMapping("/city")
 	@ResponseBody
 	@Transactional(readOnly = true)
 	public Object helloWorld() {
 		List<City> list = cityService.findAll();
 		return list;
+	}
+
+	@RequestMapping("/asset")
+	@ResponseBody
+	public Object saveAsset() {
+
+		Asset a = new Asset();
+		a.setName("zhangsan");
+		a=assetService.save(a);
+		return a;
 	}
 }
