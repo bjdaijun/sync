@@ -23,6 +23,9 @@ public class TimerTask {
 	@Autowired
 	private CityService cityService;
 
+	@Autowired
+	private AeroscoutProperties prop;
+
 	private AssetService assetService;
 
 	@Scheduled(fixedDelay = 10000)
@@ -58,6 +61,15 @@ public class TimerTask {
 
 		System.out.println(asset);
 
+	}
+
+	@Scheduled(fixedRate = 5000)
+	public void testProperties() {
+		String host = prop.getHost();
+		int port = prop.getPort();
+		String user = prop.getUser();
+		String pass = prop.getPassword();
+		System.out.println(prop);
 	}
 
 	@Scheduled(fixedDelay = 30000)
