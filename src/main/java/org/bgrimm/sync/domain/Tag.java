@@ -22,7 +22,7 @@ public class Tag implements Serializable {
 	private double x;
 	@Column(nullable = false)
 	private double y;
-	@Column(nullable = false)
+	@Column(nullable = false,name="ind")
 	private double index;
 	
 	public double getX() {
@@ -37,16 +37,18 @@ public class Tag implements Serializable {
 	public void setY(double y) {
 		this.y = y;
 	}
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	public double getIndex() {
 		return index;
 	}
 	public void setIndex(double index) {
 		this.index = index;
 	}
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-	
 	
 	
 
