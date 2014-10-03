@@ -32,6 +32,9 @@ public class Asset implements Serializable {
 	@ManyToMany(targetEntity=Category.class)
 	private List<Category> categories;
 
+	@ManyToMany(targetEntity=Department.class)
+	private List<Department> departments;
+	
 	@OneToMany(mappedBy = "asset")
 	private List<Tag> tags;
 
@@ -89,6 +92,14 @@ public class Asset implements Serializable {
 
 	public void setCategories(List<Category> categories) {
 		this.categories = categories;
+	}
+
+	public List<Department> getDepartments() {
+		return departments;
+	}
+
+	public void setDepartments(List<Department> departments) {
+		this.departments = departments;
 	}
 
 }
