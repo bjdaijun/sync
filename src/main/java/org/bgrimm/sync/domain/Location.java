@@ -1,34 +1,47 @@
 package org.bgrimm.sync.domain;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-
 @Entity
-public class Asset  implements Serializable{
+public class Location  implements Serializable{
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 5321903738728367316L;
-
+	private static final long serialVersionUID = 1L;
+	
 	@Id
-	@GeneratedValue
+//	@GeneratedValue
 	private Long id;
 	
 	private String name;
 	
-	private double x;
+	private Date date;
 	
-	private double y;
+	private Asset asset;
 	
-	private double z;
-	
-	private Long tagid;
+	private Tag tag;
 	
 	
-	
+	public Asset getAsset() {
+		return asset;
+	}
+
+	public void setAsset(Asset asset) {
+		this.asset = asset;
+	}
+
+	public Tag getTag() {
+		return tag;
+	}
+
+	public void setTag(Tag tag) {
+		this.tag = tag;
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -69,19 +82,18 @@ public class Asset  implements Serializable{
 		this.z = z;
 	}
 
-	public Long getTagid() {
-		return tagid;
+	public Date getDate() {
+		return date;
 	}
 
-	public void setTagid(Long tagid) {
-		this.tagid = tagid;
+	public void setDate(Date date) {
+		this.date = date;
 	}
 
+	private double x;
+	
+	private double y;
+	
+	private double z;
 
-	
-	
-	
-	
-	
-	
 }
