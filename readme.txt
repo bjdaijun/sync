@@ -31,5 +31,6 @@ import.sql 会在程序启动时运行。添加SQL语句到import.sql即可实�
 注意事项：
 	因采用maven构建，项目所依赖的jar包均通过互联网下载。考虑到国内网络情况，首次下载可能耗时很久。
 	AeroScout所需要的依赖包已经配置到pom.xml中，会自动下载，不需要单独拷贝。
+	aeroscout的配置参数在application.properties里
 	
 		
