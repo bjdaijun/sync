@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import org.bgrimm.sync.domain.demo.Orders;
@@ -28,6 +29,8 @@ public class Asset implements Serializable {
 	private double y;
 
 	private double z;
+	@ManyToMany(targetEntity=Category.class)
+	private List<Category> categories;
 
 	@OneToMany(mappedBy = "asset")
 	private List<Tag> tags;
@@ -78,6 +81,14 @@ public class Asset implements Serializable {
 
 	public void setZ(double z) {
 		this.z = z;
+	}
+
+	public List<Category> getCategories() {
+		return categories;
+	}
+
+	public void setCategories(List<Category> categories) {
+		this.categories = categories;
 	}
 
 }
