@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 @Entity
 public class Location  implements Serializable{
 
@@ -20,9 +21,9 @@ public class Location  implements Serializable{
 	private String name;
 	
 	private Date date;
-	
+	@ManyToOne
 	private Asset asset;
-	
+	@ManyToOne
 	private Tag tag;
 	
 	

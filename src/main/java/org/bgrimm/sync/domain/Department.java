@@ -25,21 +25,31 @@ public class Department implements Serializable {
 	private Long id;
 	private String name;
 
-//	private Set<Department> departments;
-//
-//	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER,mappedBy="parent_id")
-//	public Set<Department> getDepartments() {
-//		return departments;
-//	}
-//
-//
-//	public void setDepartments(Set<Department> departments) {
-//		this.departments = departments;
-//	}
+	@OneToMany(mappedBy = "parent")
+	private List<Department> departments;
 
+	//
+	// @OneToMany(cascade = CascadeType.ALL, fetch =
+	// FetchType.EAGER,mappedBy="parent_id")
+	// public Set<Department> getDepartments() {
+	// return departments;
+	// }
+	//
+	//
+	// public void setDepartments(Set<Department> departments) {
+	// this.departments = departments;
+	// }
 
 	public Long getId() {
 		return id;
+	}
+
+	public List<Department> getDepartments() {
+		return departments;
+	}
+
+	public void setDepartments(List<Department> departments) {
+		this.departments = departments;
 	}
 
 	public void setId(Long id) {
@@ -70,8 +80,7 @@ public class Department implements Serializable {
 		this.modifiedDate = modifiedDate;
 	}
 
-	@ManyToOne(cascade = CascadeType.REFRESH)
-	@JoinColumn(name = "parent_id")
+	@ManyToOne
 	public Department getParent() {
 		return parent;
 	}

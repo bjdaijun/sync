@@ -1,13 +1,17 @@
 package org.bgrimm.sync.domain;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
+import org.bgrimm.sync.domain.demo.Orders;
 
 @Entity
-public class Asset  implements Serializable{
+public class Asset implements Serializable {
 	/**
 	 * 
 	 */
@@ -16,19 +20,26 @@ public class Asset  implements Serializable{
 	@Id
 	@GeneratedValue
 	private Long id;
-	
+
 	private String name;
-	
+
 	private double x;
-	
+
 	private double y;
-	
+
 	private double z;
-	
-	private Long tagid;
-	
-	
-	
+
+	@OneToMany(mappedBy = "asset")
+	private List<Tag> tags;
+
+	public List<Tag> getTags() {
+		return tags;
+	}
+
+	public void setTags(List<Tag> tags) {
+		this.tags = tags;
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -69,19 +80,4 @@ public class Asset  implements Serializable{
 		this.z = z;
 	}
 
-	public Long getTagid() {
-		return tagid;
-	}
-
-	public void setTagid(Long tagid) {
-		this.tagid = tagid;
-	}
-
-
-	
-	
-	
-	
-	
-	
 }
