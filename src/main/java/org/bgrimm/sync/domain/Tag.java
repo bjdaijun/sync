@@ -21,19 +21,10 @@ public class Tag implements Serializable {
 	@GeneratedValue
 	private Long id;
 	
-	@Column(nullable = false)
-	private double x;
-	@Column(nullable = false)
-	private double y;
-	@Column(nullable = false)
-	private double z;
-	@Column(nullable = false,name="ind")
-	private double index;
 	@Column(name="class")
 	private String tagclass;
 	private String networkID;
-	private Date createDate;
-	private Date modifiedDate;
+	private String batterystatus;
 	
 	public String getTagclass() {
 		return tagclass;
@@ -47,58 +38,29 @@ public class Tag implements Serializable {
 	public void setNetworkID(String networkID) {
 		this.networkID = networkID;
 	}
-	public Date getCreateDate() {
-		return createDate;
-	}
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
-	}
-	public Date getModifiedDate() {
-		return modifiedDate;
-	}
-	public void setModifiedDate(Date modifiedDate) {
-		this.modifiedDate = modifiedDate;
-	}
+
 	@ManyToOne
 	private Asset asset;
 	
-	public double getX() {
-		return x;
-	}
-	public void setX(double x) {
-		this.x = x;
-	}
-	public double getY() {
-		return y;
-	}
-	public void setY(double y) {
-		this.y = y;
-	}
+	
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public double getIndex() {
-		return index;
-	}
-	public void setIndex(double index) {
-		this.index = index;
-	}
-	public double getZ() {
-		return z;
-	}
-	public void setZ(double z) {
-		this.z = z;
-	}
+	
 	public Asset getAsset() {
 		return asset;
 	}
 	public void setAsset(Asset asset) {
 		this.asset = asset;
 	}
+	public String getBatterystatus() {
+		return batterystatus;
+	}
+	public void setBatterystatus(String batterystatus) {
+		this.batterystatus = batterystatus;
+	}
 	
-	
-
 }
