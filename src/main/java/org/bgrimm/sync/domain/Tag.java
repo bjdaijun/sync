@@ -18,7 +18,7 @@ public class Tag implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue
+//	@GeneratedValue
 	private Long id;
 	
 	@Column(name="class")
