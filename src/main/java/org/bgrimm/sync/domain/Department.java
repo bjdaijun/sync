@@ -3,9 +3,7 @@ package org.bgrimm.sync.domain;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -25,29 +23,31 @@ public class Department implements Serializable {
 	private Long id;
 	private String name;
 
-	@OneToMany(mappedBy = "parent")
-	private List<Department> departments;
+	private Date createDate;
+	private Date modifiedDate;
+	// parent department
+	
+	@ManyToOne
+	@JoinColumn(name = "parent_id")
+	private Department parent;
+	// delete index
+	private int delInd;
+	
 
-	//
-	// @OneToMany(cascade = CascadeType.ALL, fetch =
-	// FetchType.EAGER,mappedBy="parent_id")
-	// public Set<Department> getDepartments() {
-	// return departments;
-	// }
-	//
-	//
-	// public void setDepartments(Set<Department> departments) {
-	// this.departments = departments;
-	// }
-
+	
+	
+	
 	public Long getId() {
 		return id;
 	}
-
+	
 	public List<Department> getDepartments() {
 		return departments;
 	}
-
+	
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "parent")
+	private List<Department> departments;
+	
 	public void setDepartments(List<Department> departments) {
 		this.departments = departments;
 	}
@@ -80,7 +80,7 @@ public class Department implements Serializable {
 		this.modifiedDate = modifiedDate;
 	}
 
-	@ManyToOne
+	
 	public Department getParent() {
 		return parent;
 	}
@@ -97,11 +97,6 @@ public class Department implements Serializable {
 		this.delInd = delInd;
 	}
 
-	private Date createDate;
-	private Date modifiedDate;
-	// parent department
-	private Department parent;
-	// delete index
-	private int delInd;
+	
 
 }
