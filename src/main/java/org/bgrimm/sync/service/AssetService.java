@@ -1,7 +1,6 @@
 package org.bgrimm.sync.service;
 
 import org.bgrimm.sync.dao.AssetRepository;
-import org.bgrimm.sync.dao.CityRepository;
 import org.bgrimm.sync.domain.Asset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

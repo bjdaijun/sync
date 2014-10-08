@@ -9,8 +9,6 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
-import org.bgrimm.sync.domain.demo.Orders;
-
 @Entity
 public class Asset implements Serializable {
 	/**
