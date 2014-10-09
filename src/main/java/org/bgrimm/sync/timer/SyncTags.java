@@ -1,11 +1,15 @@
 package org.bgrimm.sync.timer;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bgrimm.sync.domain.Asset;
+import org.bgrimm.sync.domain.Category;
 import org.bgrimm.sync.domain.Department;
 import org.bgrimm.sync.domain.Tag;
 import org.bgrimm.sync.service.AssetService;
+import org.bgrimm.sync.service.CategoryService;
 import org.bgrimm.sync.service.DeparmentService;
 import org.bgrimm.sync.service.ServiceLocator;
 import org.bgrimm.sync.service.TagService;
@@ -14,13 +18,17 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.aeroscout.mobileview.api.dto.QueryDTO;
+import com.aeroscout.mobileview.api.dto.asset.ArrayOfCategoryDTO;
 import com.aeroscout.mobileview.api.dto.asset.ArrayOfTagDTO;
 import com.aeroscout.mobileview.api.dto.asset.AssetDTO;
+import com.aeroscout.mobileview.api.dto.asset.CategoryDTO;
 import com.aeroscout.mobileview.api.dto.asset.TagCriteriaDTO;
 import com.aeroscout.mobileview.api.dto.asset.TagDTO;
 import com.aeroscout.mobileview.api.dto.asset.TagQueryResultDTO;
 import com.aeroscout.mobileview.api.dto.security.ArrayOfDepartmentDTO;
 import com.aeroscout.mobileview.api.dto.security.DepartmentDTO;
+import com.aeroscout.mobileview.api.service.AssetAPIServicePortType;
+import com.aeroscout.mobileview.api.service.CategoryAPIServicePortType;
 import com.aeroscout.mobileview.api.service.DepartmentAPIServicePortType;
 import com.aeroscout.mobileview.api.service.TagAPIServicePortType;
 import com.aeroscout.mobileview.proxy.AeroScoutServiceLocator;
@@ -37,6 +45,9 @@ public class SyncTags {
 	private DeparmentService deparmentService;
 
 	@Autowired
+	private CategoryService categoryService;
+
+	@Autowired
 	private AssetService assetService;
 
 	@Scheduled(fixedDelay = 5000)
@@ -45,8 +56,40 @@ public class SyncTags {
 		syncAsset();
 		// tongbu deparment
 		syncDeparment();
+		syncCategary();
 		//
-//		syncTag();
+		// syncTag();
+
+	}
+
+	private void syncCategary() {
+		CategoryAPIServicePortType catPort = locator.getLocator()
+				.getCategoryAPIService();
+
+		ArrayOfCategoryDTO arr = catPort.findAllCategories();
+		List<CategoryDTO> list = arr.getCategoryDTO();
+
+		Map<Long, Long> idMap = new HashMap();
+		for (CategoryDTO dto : list) {
+			Category cat = new Category();
+			cat.setStatus(dto.getActivityStatus().toString());
+			cat.setVersion(dto.getVersion());
+			cat.setId(dto.getId());
+			cat.setDescription(dto.getDescription());
+			cat.setName(dto.getName());
+			cat.setImage(dto.getImage());
+			CategoryDTO parent = dto.getParent();
+			if (parent != null) {
+				idMap.put(cat.getId(), parent.getId());
+			}
+			categoryService.save(cat);
+		}
+		for (Long key : idMap.keySet()) {
+			Category c = categoryService.findById(key);
+			Category p = categoryService.findById(idMap.get(key));
+			c.setParent(p);
+			categoryService.save(c);
+		}
 
 	}
 
@@ -55,16 +98,25 @@ public class SyncTags {
 		DepartmentAPIServicePortType dt = serviceLocator.getDepartmentService();
 		ArrayOfDepartmentDTO arr = dt.findAllDepartments();
 		List<DepartmentDTO> list = arr.getDepartmentDTO();
+		Map<Long, Long> idMap = new HashMap();
 		for (DepartmentDTO dto : list) {
 			Department deparment = new Department();
 			deparment.setId(dto.getId());
 			deparment.setName(dto.getName());
 			DepartmentDTO parent = dto.getParent();
 			if (parent != null) {
-				Department depParent = saveParent(parent);
-				deparment.setParent(depParent);
+				// Department depParent = saveParent(parent);
+				// deparment.setParent(depParent);
+				idMap.put(deparment.getId(), parent.getId());
 			}
 			deparmentService.save(deparment);
+		}
+
+		for (Long id : idMap.keySet()) {
+			Department d = deparmentService.findById(id);
+			Department p = deparmentService.findById(idMap.get(id));
+			d.setParent(p);
+			deparmentService.save(d);
 		}
 	}
 
@@ -92,7 +144,6 @@ public class SyncTags {
 			} else {
 				System.out.println("NULL");
 			}
-
 			Tag tag = new Tag();
 			tag.setId(tagDto.getId());
 			// tag.setCreateDate(tagDto.g)
@@ -119,8 +170,10 @@ public class SyncTags {
 	}
 
 	private void syncAsset() {
-		// TODO Auto-generated method stub
+		AeroScoutServiceLocator serviceLocator = locator.getLocator();
+		AssetAPIServicePortType assetPort = serviceLocator.getAssetAPIService();
 
+		AssetDTO ado = assetPort.findPopulatedAssetById(1l);
 	}
 
 }

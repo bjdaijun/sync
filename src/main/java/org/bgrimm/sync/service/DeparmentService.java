@@ -16,4 +16,8 @@ public class DeparmentService {
 		deparmentRepository.save(dp);
 	}
 
+	public Department findById(Long id) {
+		return deparmentRepository.findById(id);
+	}
+
 }
