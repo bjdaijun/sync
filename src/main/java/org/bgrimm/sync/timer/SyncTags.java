@@ -55,12 +55,12 @@ public class SyncTags {
 
 	@Scheduled(fixedDelay = 5000)
 	public void test() {
-		// tongbu asset
-		syncAsset();
+		
 		// tongbu deparment
 		syncDeparment();
 		syncCategary();
-
+		// tongbu asset
+				syncAsset();
 		//
 		// syncTag();
 
@@ -216,6 +216,29 @@ public class SyncTags {
 			idList.add(a.getId());
 		}
 		updateAssetDepartments(idList);
+		updateAssetCategories(idList);
+	}
+
+	private void updateAssetCategories(List<Long> idList) {
+		AssetAPIServicePortType assetPort = locator.getLocator()
+				.getAssetAPIService();
+		for (Long id : idList) {
+			AssetDTO dto = assetPort.findPopulatedAssetById(id);
+			Asset a = assetService.findById(id);
+
+			List<CategoryDTO> catList=dto.getCategories().getCategoryDTO();
+			
+			List<Category> list = new ArrayList();
+
+			for (CategoryDTO d : catList) {
+				Category dp = categoryService.findById(d.getId());
+				if (dp != null)
+					list.add(dp);
+			}
+			a.setCategories(list);
+			assetService.save(a);
+		}
+
 	}
 
 	private void updateAssetDepartments(List<Long> idList) {
