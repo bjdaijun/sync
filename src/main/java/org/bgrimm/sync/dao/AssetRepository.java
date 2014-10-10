@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AssetRepository extends CrudRepository<Asset, Long> {
+
+	Asset findById(Long id);
 	
 
 }

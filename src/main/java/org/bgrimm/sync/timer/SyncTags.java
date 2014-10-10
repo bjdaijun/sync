@@ -1,5 +1,6 @@
 package org.bgrimm.sync.timer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,9 @@ import org.springframework.stereotype.Component;
 import com.aeroscout.mobileview.api.dto.QueryDTO;
 import com.aeroscout.mobileview.api.dto.asset.ArrayOfCategoryDTO;
 import com.aeroscout.mobileview.api.dto.asset.ArrayOfTagDTO;
+import com.aeroscout.mobileview.api.dto.asset.AssetCriteriaDTO;
 import com.aeroscout.mobileview.api.dto.asset.AssetDTO;
+import com.aeroscout.mobileview.api.dto.asset.AssetQueryResultDTO;
 import com.aeroscout.mobileview.api.dto.asset.CategoryDTO;
 import com.aeroscout.mobileview.api.dto.asset.TagCriteriaDTO;
 import com.aeroscout.mobileview.api.dto.asset.TagDTO;
@@ -57,6 +60,7 @@ public class SyncTags {
 		// tongbu deparment
 		syncDeparment();
 		syncCategary();
+
 		//
 		// syncTag();
 
@@ -98,6 +102,7 @@ public class SyncTags {
 		DepartmentAPIServicePortType dt = serviceLocator.getDepartmentService();
 		ArrayOfDepartmentDTO arr = dt.findAllDepartments();
 		List<DepartmentDTO> list = arr.getDepartmentDTO();
+		// <ID, ParentID>
 		Map<Long, Long> idMap = new HashMap();
 		for (DepartmentDTO dto : list) {
 			Department deparment = new Department();
@@ -118,6 +123,20 @@ public class SyncTags {
 			d.setParent(p);
 			deparmentService.save(d);
 		}
+
+		// idList to update asset
+
+		updateAssetDeparments(list);
+	}
+
+	private void updateAssetDeparments(List<DepartmentDTO> list) {
+		AssetAPIServicePortType assetPort = locator.getLocator()
+				.getAssetAPIService();
+		for (DepartmentDTO dep : list) {
+			AssetCriteriaDTO cri = new AssetCriteriaDTO();
+			ArrayOfDepartmentDTO arr = new ArrayOfDepartmentDTO();
+		}
+
 	}
 
 	private Department saveParent(DepartmentDTO parent) {
@@ -170,10 +189,69 @@ public class SyncTags {
 	}
 
 	private void syncAsset() {
-		AeroScoutServiceLocator serviceLocator = locator.getLocator();
-		AssetAPIServicePortType assetPort = serviceLocator.getAssetAPIService();
+		AssetAPIServicePortType assetPort = locator.getLocator()
+				.getAssetAPIService();
+		AssetCriteriaDTO cri = new AssetCriteriaDTO();
+		QueryDTO query = new QueryDTO();
+		query.setPageNo(1);
+		query.setPageSize(999);
+		AssetQueryResultDTO resultDto = assetPort.findAssetsByCriteria(cri,
+				query);
+		List<AssetDTO> list = resultDto.getAssets().getAssetDTO();
+		List<Long> idList = new ArrayList();
+		for (AssetDTO dto : list) {
+			Asset a = new Asset();
+			a.setId(dto.getId());
+			a.setActivityStatus(dto.getActivityStatus().toString());
+			a.setBusinessStatus(dto.getAssetBusinessStatus().getName());
+			a.setDeleted(dto.isDeleted());
+			a.setPopulated(dto.isPopulated());
+			a.setSerialNo(dto.getSerialNo());
+			a.setVersion(dto.getVersion());
+			Long primaryCategoryId = dto.getPrimaryCategory().getId();
+			Category c = categoryService.findById(primaryCategoryId);
+			a.setPrimaryCategory(c);
+			a.setDescription(dto.getDescription());
+			assetService.save(a);
+			idList.add(a.getId());
+		}
+		updateAssetDepartments(idList);
+	}
 
-		AssetDTO ado = assetPort.findPopulatedAssetById(1l);
+	private void updateAssetDepartments(List<Long> idList) {
+		AssetAPIServicePortType assetPort = locator.getLocator()
+				.getAssetAPIService();
+		for (Long id : idList) {
+			AssetDTO dto = assetPort.findPopulatedAssetById(id);
+			Asset a = assetService.findById(id);
+			List<DepartmentDTO> depList = dto.getDepartments()
+					.getDepartmentDTO();
+
+			List<Department> list = new ArrayList();
+
+			for (DepartmentDTO d : depList) {
+				Department dp = deparmentService.findById(d.getId());
+				if (dp != null)
+					list.add(dp);
+			}
+			a.setDepartments(list);
+			assetService.save(a);
+		}
+
+	}
+
+	private List<Department> getDepListByDTO(
+			ArrayOfDepartmentDTO arrayOfDepartmentDTO) {
+
+		List<Department> result = new ArrayList();
+		if (arrayOfDepartmentDTO != null) {
+			List<DepartmentDTO> list = arrayOfDepartmentDTO.getDepartmentDTO();
+			for (DepartmentDTO dto : list) {
+				result.add(deparmentService.findById(dto.getId()));
+			}
+		}
+
+		return result;
 	}
 
 }

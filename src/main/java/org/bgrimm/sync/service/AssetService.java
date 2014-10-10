@@ -17,6 +17,11 @@ public class AssetService {
 		return assetRepopsitory.save(a);
 	}
 
+	public Asset findById(Long id) {
+		// TODO Auto-generated method stub
+		return assetRepopsitory.findById(id);
+	}
+
 	// @Autowired
 	// public AssetService(AssetRepository assetRepopsitory) {
 	// this.assetRepopsitory = assetRepopsitory;
