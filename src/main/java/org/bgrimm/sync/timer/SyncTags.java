@@ -123,9 +123,7 @@ public class SyncTags {
 			d.setParent(p);
 			deparmentService.save(d);
 		}
-
 		// idList to update asset
-
 		updateAssetDeparments(list);
 	}
 
@@ -181,9 +179,7 @@ public class SyncTags {
 				assetService.save(asset);
 				tag.setAsset(asset);
 			}
-
 			//
-
 			tagService.save(tag);
 		}
 	}
