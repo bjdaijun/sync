@@ -19,7 +19,6 @@ public class Asset implements Serializable {
 	private static final long serialVersionUID = 5321903738728367316L;
 
 	@Id
-	@GeneratedValue
 	private Long id;
 
 	private String name;
