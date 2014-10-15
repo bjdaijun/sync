@@ -342,6 +342,7 @@ public class SyncTags {
 					list.add(dp);
 			}
 			a.setDepartments(list);
+			
 			assetService.save(a);
 		}
 	}
