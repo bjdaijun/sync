@@ -33,10 +33,6 @@ public class Department implements Serializable {
 	// delete index
 	private int delInd;
 	
-
-	
-	
-	
 	public Long getId() {
 		return id;
 	}

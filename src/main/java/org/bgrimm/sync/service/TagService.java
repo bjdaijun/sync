@@ -1,6 +1,7 @@
 package org.bgrimm.sync.service;
 
 import org.bgrimm.sync.dao.TagRepository;
+import org.bgrimm.sync.domain.Asset;
 import org.bgrimm.sync.domain.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,5 +16,8 @@ public class TagService {
 	public Tag save(Tag a) {
 			return tagRepopsitory.save(a);
 		}
-
+	public Tag findById(Long id) {
+		// TODO Auto-generated method stub
+		return tagRepopsitory.findById(id);
+	}
 }

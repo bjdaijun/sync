@@ -2,6 +2,7 @@ package org.bgrimm.sync.timer;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.bgrimm.sync.domain.Asset;
 import org.bgrimm.sync.domain.Location;
 import org.bgrimm.sync.service.LocationService;
 import org.joda.time.DateTime;
@@ -39,9 +40,9 @@ public class TimerTask {
 	// System.out.println(cityList);
 	// }
 
-	@Scheduled(fixedDelay = 5000)
+	//@Scheduled(fixedDelay = 5000)
 	public void test() {
-		System.out.println("sdfasdfasdfasdfasdfasdfwww");
+		//System.out.println("sdfasdfasdfasdfasdfasdfwww");
 		// String host = "172.16.3.214";
 		// int port = 803;
 		// String user = "system";
@@ -61,7 +62,9 @@ public class TimerTask {
 				.getAssetService();
 		AssetAPIServicePortType as = aeroScoutServiceLocator
 				.getAssetAPIService();
-		AssetDTO ste = as.findPopulatedAssetByTagNetworkId("000CCC54BF1E");
+		//AssetDTO sts = as.findAssetsByCriteria(arg0, arg1)
+	
+	    AssetDTO ste = as.findPopulatedAssetByTagNetworkId("000CCC54BF1E");
 		AssetDTO asset = as.findPopulatedAssetById(1l);
 		LocatorAPIServicePortType lap = aeroScoutServiceLocator
 				.getLocatorAPIService();
@@ -75,6 +78,9 @@ public class TimerTask {
 		// query.setPageSize(20);
 		// AssetQueryResultDTO result = as.findAssetsByCriteria(cri, query);
 		// result.getAssets();
+		Asset ass = new Asset();
+		ass.setId(1L);
+		
 		System.out.println(xy.getY() + "," + xy.getX());
 		System.out.println(ld.getDateCreated());
 
@@ -83,6 +89,7 @@ public class TimerTask {
 		location.setY(xy.getY());
 		location.setZ(xy.getZ());
 		location.setId(ld.getId());
+		location.setAsset(ass);
 
 		// System.out.println(asset);
 		XMLGregorianCalendar cal = ld.getDateCreated();

@@ -5,15 +5,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.bgrimm.sync.domain.Asset;
 import org.bgrimm.sync.domain.Category;
 import org.bgrimm.sync.domain.Department;
+import org.bgrimm.sync.domain.Location;
 import org.bgrimm.sync.domain.Tag;
 import org.bgrimm.sync.service.AssetService;
 import org.bgrimm.sync.service.CategoryService;
 import org.bgrimm.sync.service.DeparmentService;
+import org.bgrimm.sync.service.LocationService;
 import org.bgrimm.sync.service.ServiceLocator;
 import org.bgrimm.sync.service.TagService;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -28,11 +33,15 @@ import com.aeroscout.mobileview.api.dto.asset.CategoryDTO;
 import com.aeroscout.mobileview.api.dto.asset.TagCriteriaDTO;
 import com.aeroscout.mobileview.api.dto.asset.TagDTO;
 import com.aeroscout.mobileview.api.dto.asset.TagQueryResultDTO;
+import com.aeroscout.mobileview.api.dto.location.ArrayOfLocationDTO;
+import com.aeroscout.mobileview.api.dto.location.LocationDTO;
+import com.aeroscout.mobileview.api.dto.location.LocatorQueryResultDTO;
 import com.aeroscout.mobileview.api.dto.security.ArrayOfDepartmentDTO;
 import com.aeroscout.mobileview.api.dto.security.DepartmentDTO;
 import com.aeroscout.mobileview.api.service.AssetAPIServicePortType;
 import com.aeroscout.mobileview.api.service.CategoryAPIServicePortType;
 import com.aeroscout.mobileview.api.service.DepartmentAPIServicePortType;
+import com.aeroscout.mobileview.api.service.LocatorAPIServicePortType;
 import com.aeroscout.mobileview.api.service.TagAPIServicePortType;
 import com.aeroscout.mobileview.proxy.AeroScoutServiceLocator;
 
@@ -52,6 +61,9 @@ public class SyncTags {
 
 	@Autowired
 	private AssetService assetService;
+	
+	@Autowired
+	private LocationService locationService;
 
 	@Scheduled(fixedDelay = 5000)
 	public void test() {
@@ -60,9 +72,10 @@ public class SyncTags {
 		syncDeparment();
 		syncCategary();
 		// tongbu asset
-				syncAsset();
+		syncAsset();
 		//
-		// syncTag();
+		syncTag();
+		syncLocations();
 
 	}
 
@@ -144,7 +157,81 @@ public class SyncTags {
 		deparmentService.save(dp);
 		return dp;
 	}
-
+	// synchronize the locations,may be runtime highly 5seconds.10seconds ....
+	private void syncLocations()
+	{
+		AeroScoutServiceLocator aslocator = locator.getLocator();
+		LocatorAPIServicePortType  locatorApiSPT = aslocator.getLocatorAPIService();
+		AssetCriteriaDTO cri = new AssetCriteriaDTO();
+		QueryDTO query = new QueryDTO();
+		query.setPageNo(1);
+		query.setPageSize(999);
+//		//locatorApiSPT.
+		//LocatorQueryResultDTO  lqueyResultDto = locatorApiSPT.findAllTagsCurrentLocation(query);	\
+		//LocatorQueryResultDTO  lqueyResultDto = locatorApiSPT.findAllTagsCurrentLocation(query);	
+		LocatorQueryResultDTO lqueyResultDto = locatorApiSPT.findAssetsCurrentLocationByArea(1, query);
+		ArrayOfLocationDTO  arrayLocationDto = lqueyResultDto.getLocations();
+		List<LocationDTO>  locationdtoList = arrayLocationDto.getLocationDTO();
+//		System.out.println("niasndi1111"+"    "+locationdtoList.size());
+		//LocatorQueryResultDTO lqResultDto1 = locatorApiSPT.findAssetsCurrentLocationByMap(1l, query);//.findAssetsCurrentLocationByCriteria(cri, query);
+//		LocationDTO  lodto = locatorApiSPT.findAssetCurrentLocation(1L);
+//		System.out.println(lodto.getPoint().getY() + "," + lodto.getPoint().getX());
+//		Location location = new Location();
+//		location.setX(lodto.getPoint().getX());
+//		location.setY(lodto.getPoint().getY());
+//		location.setZ(lodto.getPoint().getZ());
+//		
+//		AssetDTO  assetDto = lodto.getAsset();
+//		long assetid = assetDto.getId();
+//		Asset asset = assetService.findById(assetid);
+//		location.setAsset(asset);
+//		TagDTO tagDto = lodto.getTagDTO();
+//		long tagid = tagDto.getId();
+//		Tag tag = tagService.findById(tagid);
+//		location.setTag(tag);
+//		locationService.save(location);
+		//LocatorQueryResultDTO lqResultDto1 = locatorApiSPT.findAssetsCurrentLocationByCriteria(cri, query);
+//		ArrayOfLocationDTO  arrayLocationDto = lqueyResultDto.getLocations();
+//		List<LocationDTO>  locationdtoList = arrayLocationDto.getLocationDTO();
+//		System.out.println("niasndi1111"+"    "+locationdtoList.size());
+		for(LocationDTO locDto : locationdtoList)
+		{
+			if(locDto.getPoint() != null)
+			{
+				System.out.println("niasndifasdf");
+				System.out.println(locDto.getPoint().getX());
+				System.out.println(locDto.getPoint().getY());
+				System.out.println(locDto.getPoint().getZ());
+			}
+			else
+			{
+				System.out.println("NUll...");
+			}
+			
+			Location location = new Location();
+			location.setX(locDto.getPoint().getX());
+			location.setY(locDto.getPoint().getY());
+			location.setZ(locDto.getPoint().getZ());
+			
+			AssetDTO  assetDto = locDto.getAsset();
+			long assetid = assetDto.getId();
+			Asset asset = assetService.findById(assetid);
+			location.setAsset(asset);
+			TagDTO tagDto = locDto.getTagDTO();
+			long tagid = tagDto.getId();
+			Tag tag = tagService.findById(tagid);
+			location.setTag(tag);
+			
+			XMLGregorianCalendar cal = locDto.getDateCreated();
+			DateTime dt = new DateTime(cal.getYear(), cal.getMonth(), cal.getDay(),
+					cal.getHour(), cal.getMinute(), cal.getSecond(),
+					cal.getMillisecond());
+			location.setDate(dt.toDate());
+			
+			locationService.save(location);
+		}
+		
+	}
 	private void syncTag() {
 		AeroScoutServiceLocator serviceLocator = locator.getLocator();
 		TagAPIServicePortType tagapis = serviceLocator.getTagAPIService();
@@ -194,12 +281,13 @@ public class SyncTags {
 		AssetQueryResultDTO resultDto = assetPort.findAssetsByCriteria(cri,
 				query);
 		List<AssetDTO> list = resultDto.getAssets().getAssetDTO();
+		//System.out.println("niasndi1111"+"    "+list.size());
 		List<Long> idList = new ArrayList();
 		for (AssetDTO dto : list) {
 			Asset a = new Asset();
 			a.setId(dto.getId());
 			a.setActivityStatus(dto.getActivityStatus().toString());
-			a.setBusinessStatus(dto.getAssetBusinessStatus().getName());
+			//a.setBusinessStatus(dto.getAssetBusinessStatus().getName());  //bug.....
 			a.setDeleted(dto.isDeleted());
 			a.setPopulated(dto.isPopulated());
 			a.setSerialNo(dto.getSerialNo());
@@ -256,9 +344,7 @@ public class SyncTags {
 			a.setDepartments(list);
 			assetService.save(a);
 		}
-
 	}
-
 	private List<Department> getDepListByDTO(
 			ArrayOfDepartmentDTO arrayOfDepartmentDTO) {
 
